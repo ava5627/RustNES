@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Test",
+            "command": "cargo test",
+            "default": false
+        },
+        {
+            "name": "Run",
+            "command": "cargo run",
+            "default": true,
+            "env": {
+                "RUST_BACKTRACE": "0"
+            }
+        }
+    ]
+}
