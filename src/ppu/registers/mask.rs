@@ -60,3 +60,9 @@ impl MaskRegister {
         *self = MaskRegister::from_bits_truncate(data);
     }
 }
+
+impl Default for MaskRegister {
+    fn default() -> Self {
+        Self::new()
+    }
+}

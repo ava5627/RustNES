@@ -42,7 +42,7 @@ fn main() {
     if args.len() > 1 {
         run(&args[1]);
     } else {
-        run("bins/pacman.nes");
+        run("bins/super_mario_bros.nes");
     }
 }
 fn run(rom_path: &str) {

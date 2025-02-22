@@ -18,6 +18,12 @@ pub struct Joypad {
     button_status: JoypadButton,
 }
 
+impl Default for Joypad {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Joypad {
     pub fn new() -> Self {
         Joypad {

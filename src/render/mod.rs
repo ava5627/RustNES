@@ -1,3 +1,4 @@
+#![allow(clippy::needless_range_loop)]
 use crate::{cartridge::Mirroring, ppu::NesPPU};
 
 use frame::Frame;

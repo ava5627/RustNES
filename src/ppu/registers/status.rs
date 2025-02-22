@@ -44,3 +44,9 @@ impl StatusRegister {
         self.contains(StatusRegister::VERTICAL_BLANK)
     }
 }
+
+impl Default for StatusRegister {
+    fn default() -> Self {
+        Self::new()
+    }
+}

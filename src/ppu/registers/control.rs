@@ -75,3 +75,9 @@ impl ControlRegister {
 
 
 }
+
+impl Default for ControlRegister {
+    fn default() -> Self {
+        Self::new()
+    }
+}

@@ -5,11 +5,11 @@ use crate::{
     render::{frame::Frame, palette::SYSTEM_PALLETE},
 };
 
-pub fn show_tile(chr_rom: &Vec<u8>, bank: usize, tile_n: usize) -> Frame {
+pub fn show_tile(chr_rom: &[u8], bank: usize, tile_n: usize) -> Frame {
     assert!(bank <= 1);
 
     let mut frame = Frame::new();
-    let bank = (bank * 0x1000) as usize;
+    let bank = bank * 0x1000;
 
     let tile = &chr_rom[(bank + tile_n * 16)..=(bank + tile_n * 16 + 15)];
 
@@ -40,13 +40,13 @@ pub fn show_tile(chr_rom: &Vec<u8>, bank: usize, tile_n: usize) -> Frame {
     frame
 }
 
-pub fn show_tile_bank(chr_rom: &Vec<u8>, bank: usize) -> Frame {
+pub fn show_tile_bank(chr_rom: &[u8], bank: usize) -> Frame {
     assert!(bank <= 1);
 
     let mut frame = Frame::new();
     let mut tile_x = 0;
     let mut tile_y = 0;
-    let bank = (bank * 0x1000) as usize;
+    let bank = bank * 0x1000;
 
     for tile_n in 0..255 {
         if tile_n != 0 && tile_n % 20 == 0 {

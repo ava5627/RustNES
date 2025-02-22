@@ -5,10 +5,10 @@ use crate::{
 
 pub fn trace(cpu: &mut CPU) -> String {
     // C000  4C F5 C5 JMP $C5F5                         A:00 X:00 Y:00 P:24 SP:FB PPU:  0,  0 CYC:  0
-    let ref opcodes = *CPU_OPS_CODES_MAP;
+    let opcodes = &CPU_OPS_CODES_MAP;
 
     let code = cpu.mem_read(cpu.program_counter);
-    let opcode = opcodes.get(&code).expect(format!("Unknown opcode: {:02X}", code).as_str());
+    let opcode = opcodes.get(&code).unwrap_or_else(|| panic!("Unknown opcode: {:02X}", code));
 
     let begin = cpu.program_counter;
     let mut dump = vec![];
@@ -26,8 +26,8 @@ pub fn trace(cpu: &mut CPU) -> String {
 
     let tmp = match opcode.bytes {
         1 => match opcode.addr_mode {
-            AddressingMode::Accumulator => format!("A "),
-            _ => format!(""),
+            AddressingMode::Accumulator => "A ".to_string(),
+            _ => String::new(),
         },
         2 => {
             let address = cpu.mem_read(begin + 1);
@@ -60,7 +60,7 @@ pub fn trace(cpu: &mut CPU) -> String {
                     let address = (begin as usize + 2).wrapping_add((address as i8) as usize);
                     format!("${:04X}", address)
                 }
-                _ => format!(""),
+                _ => String::new(),
             }
         }
         3 => {
@@ -101,7 +101,7 @@ pub fn trace(cpu: &mut CPU) -> String {
                 _ => panic!("Invalid addressing mode"),
             }
         }
-        _ => format!(""),
+        _ => String::new(),
     };
 
     let hex_str = dump

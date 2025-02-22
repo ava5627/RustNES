@@ -1,3 +1,4 @@
+#![allow(clippy::upper_case_acronyms)]
 use std::{collections::HashMap, fmt::Display};
 
 use nes_macro::{match_all, opcode};
@@ -128,8 +129,8 @@ pub struct CPU<'a> {
     pub bus: Bus<'a>,
 }
 
-impl<'a> CPU<'a> {
-    pub fn new<'b>(bus: Bus<'b>) -> CPU<'b> {
+impl CPU<'_> {
+    pub fn new(bus: Bus<'_>) -> CPU<'_> {
         CPU {
             register_a: 0,
             register_x: 0,
@@ -417,7 +418,7 @@ impl<'a> CPU<'a> {
     fn eor(&mut self, mode: &AddressingMode) {
         let (address, pc) = self.get_operand_address(mode);
         let value = self.mem_read(address);
-        self.register_a = self.register_a ^ value;
+        self.register_a ^= value;
         self.update_zero_and_negative_flags(self.register_a);
         if pc {
             self.bus.tick(1);
@@ -548,7 +549,7 @@ impl<'a> CPU<'a> {
     fn ora(&mut self, mode: &AddressingMode) {
         let (address, pc) = self.get_operand_address(mode);
         let value = self.mem_read(address);
-        self.register_a = self.register_a | value;
+        self.register_a |= value;
         self.update_zero_and_negative_flags(self.register_a);
         if pc {
             self.bus.tick(1);
@@ -910,8 +911,8 @@ impl<'a> CPU<'a> {
     fn interrupt(&mut self, interrupt: interrupt::Interrupt) {
         self.stack_push_u16(self.program_counter);
         let mut flag = self.status.clone();
-        flag.set(StatusFlags::BREAK, interrupt.b_flag_mask & 0b010000 == 1);
-        flag.set(StatusFlags::BREAK2, interrupt.b_flag_mask & 0b100000 == 1);
+        flag.set(StatusFlags::BREAK, interrupt.b_flag_mask & 0b0010000 != 0);
+        flag.set(StatusFlags::BREAK2, interrupt.b_flag_mask & 0b100000 != 0);
 
         self.stack_push_u8(flag.bits());
         self.status.insert(StatusFlags::INTERRUPT_DISABLE);
@@ -926,17 +927,13 @@ impl<'a> CPU<'a> {
             AddressingMode::Absolute => (self.u16_mem_read(addr), false),
             AddressingMode::ZeroPageX => {
                 let zero_page_address = self.mem_read(addr);
-                (
-                    zero_page_address.wrapping_add(self.register_x) as u16,
-                    false,
-                )
+                let wrapping_add = zero_page_address.wrapping_add(self.register_x) as u16;
+                (wrapping_add, false)
             }
             AddressingMode::ZeroPageY => {
                 let zero_page_address = self.mem_read(addr);
-                (
-                    zero_page_address.wrapping_add(self.register_y) as u16,
-                    false,
-                )
+                let wrapping_add = zero_page_address.wrapping_add(self.register_y) as u16;
+                (wrapping_add, false)
             }
             AddressingMode::AbsoluteX => {
                 let absolute_address = self.u16_mem_read(addr);
@@ -983,7 +980,7 @@ impl<'a> CPU<'a> {
     where
         F: FnMut(&mut CPU),
     {
-        let ref opcode_map: HashMap<u8, &opcodes::OpCode> = *opcodes::CPU_OPS_CODES_MAP;
+        let opcode_map: &HashMap<u8, &opcodes::OpCode> = &opcodes::CPU_OPS_CODES_MAP;
         loop {
             if let Some(_nmi) = self.bus.poll_nmi_status() {
                 self.interrupt(interrupt::NMI);
@@ -996,7 +993,7 @@ impl<'a> CPU<'a> {
 
             let opcode = opcode_map
                 .get(&code)
-                .expect(&format!("opcode not found: {}", code));
+                .unwrap_or_else(|| panic!("opcode not found: {}", code));
 
             match_all!(code);
 

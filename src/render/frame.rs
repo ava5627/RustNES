@@ -22,3 +22,9 @@ impl Frame {
         }
     }
 }
+
+impl Default for Frame {
+    fn default() -> Self {
+        Self::new()
+    }
+}

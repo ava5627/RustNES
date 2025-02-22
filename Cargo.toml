@@ -9,5 +9,5 @@ edition = "2021"
 bitflags = "2.3.3"
 lazy_static = "1.4.0"
 nes_macro = { path = "nes_macro" }
-sdl2 = "*"
-rand = "*"
+sdl2 = "0.34.0"
+rand = "0.7.3"

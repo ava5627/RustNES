@@ -17,8 +17,8 @@ pub struct Rom {
 }
 
 impl Rom {
-    pub fn new(raw: &Vec<u8>) -> Result<Rom, String> {
-        if &raw[0..4] != &NES_TAG {
+    pub fn new(raw: &[u8]) -> Result<Rom, String> {
+        if raw[0..4] != NES_TAG {
             return Err("Invalid NES file".to_string());
         }
 
@@ -90,7 +90,7 @@ pub mod test {
             ],
             trainer: None,
             pgp_rom: vec![1; 2 * PRG_ROM_PAGE_SIZE],
-            chr_rom: vec![2; 1 * CHR_ROM_PAGE_SIZE],
+            chr_rom: vec![2; CHR_ROM_PAGE_SIZE],
         });
 
         Rom::new(&test_rom).unwrap()
@@ -104,12 +104,12 @@ pub mod test {
             ],
             trainer: None,
             pgp_rom: vec![1; 2 * PRG_ROM_PAGE_SIZE],
-            chr_rom: vec![2; 1 * CHR_ROM_PAGE_SIZE],
+            chr_rom: vec![2; CHR_ROM_PAGE_SIZE],
         });
 
         let rom: Rom = Rom::new(&test_rom).unwrap();
 
-        assert_eq!(rom.chr_rom, vec!(2; 1 * CHR_ROM_PAGE_SIZE));
+        assert_eq!(rom.chr_rom, vec!(2; CHR_ROM_PAGE_SIZE));
         assert_eq!(rom.prg_rom, vec!(1; 2 * PRG_ROM_PAGE_SIZE));
         assert_eq!(rom.mapper, 3);
         assert_eq!(rom.mirroring, Mirroring::VERTICAL);
@@ -138,12 +138,12 @@ pub mod test {
             ],
             trainer: Some(vec![0; 512]),
             pgp_rom: vec![1; 2 * PRG_ROM_PAGE_SIZE],
-            chr_rom: vec![2; 1 * CHR_ROM_PAGE_SIZE],
+            chr_rom: vec![2; CHR_ROM_PAGE_SIZE],
         });
 
         let rom: Rom = Rom::new(&test_rom).unwrap();
 
-        assert_eq!(rom.chr_rom, vec!(2; 1 * CHR_ROM_PAGE_SIZE));
+        assert_eq!(rom.chr_rom, vec!(2; CHR_ROM_PAGE_SIZE));
         assert_eq!(rom.prg_rom, vec!(1; 2 * PRG_ROM_PAGE_SIZE));
         assert_eq!(rom.mapper, 3);
         assert_eq!(rom.mirroring, Mirroring::VERTICAL);
@@ -156,12 +156,12 @@ pub mod test {
                 0x4E, 0x45, 0x53, 0x1A, 0x01, 0x01, 0x31, 0x8, 00, 00, 00, 00, 00, 00, 00, 00,
             ],
             trainer: None,
-            pgp_rom: vec![1; 1 * PRG_ROM_PAGE_SIZE],
-            chr_rom: vec![2; 1 * CHR_ROM_PAGE_SIZE],
+            pgp_rom: vec![1; PRG_ROM_PAGE_SIZE],
+            chr_rom: vec![2; CHR_ROM_PAGE_SIZE],
         });
         let rom = Rom::new(&test_rom);
         match rom {
-            Result::Ok(_) => assert!(false, "should not load rom"),
+            Result::Ok(_) => panic!("should not load rom"),
             Result::Err(str) => assert_eq!(str, "Unsupported iNES version"),
         }
     }

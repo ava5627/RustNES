@@ -1,7 +1,8 @@
 use crate::{
     cartridge::Rom,
     cpu::Mem,
-    ppu::{NesPPU, PPU}, joypad::Joypad,
+    joypad::Joypad,
+    ppu::{NesPPU, PPU},
 };
 
 const RAM: u16 = 0x0000;
@@ -34,7 +35,7 @@ impl Mem for Bus<'_> {
             PPU_DATA => self.ppu.read_data(),
             0x4000..=0x4015 => 0, // APU
             0x4016 => self.joypad1.read(),
-            0x4017 => 0,          // joypad 2
+            0x4017 => 0, // joypad 2
             PPU_REGISTERS_MIRRORS_START..=PPU_REGISTERS_MIRRORS_END => {
                 let miror_down_address = address & 0x2007;
                 self.mem_read(miror_down_address)
@@ -62,7 +63,7 @@ impl Mem for Bus<'_> {
             PPU_DATA => self.ppu.write_to_data(value),
             0x4000..=0x4013 | 0x4015 => {} // APU
             0x4016 => self.joypad1.write(value),
-            0x4017 => {}                   // joypad 2
+            0x4017 => {} // joypad 2
             0x4014 => {
                 let mut buffer: [u8; 256] = [0; 256];
                 let hi: u16 = (value as u16) << 8;
@@ -80,6 +81,7 @@ impl Mem for Bus<'_> {
         }
     }
 }
+type GameLoopCallback<'c> = Box<dyn FnMut(&NesPPU, &mut Joypad) + 'c>;
 
 pub struct Bus<'call> {
     cpu_vram: [u8; 2048],
@@ -87,11 +89,11 @@ pub struct Bus<'call> {
     ppu: NesPPU,
 
     cycles: usize,
-    game_loop_callback: Box<dyn FnMut(&NesPPU, &mut Joypad) + 'call>,
+    game_loop_callback: GameLoopCallback<'call>,
     joypad1: Joypad,
 }
 
-impl<'a> Bus<'a> {
+impl Bus<'_> {
     pub fn new<'call, F>(rom: Rom, game_loop_callback: F) -> Bus<'call>
     where
         F: FnMut(&NesPPU, &mut Joypad) + 'call,

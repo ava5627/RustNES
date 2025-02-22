@@ -93,9 +93,9 @@ impl NesPPU {
 
             if self.scanline >= 262 {
                 self.scanline = 0;
-                self.status.reset_vertical_blank();
-                self.status.set_sprite_zero_hit(false);
                 self.nmi_interrupt = None;
+                self.status.set_sprite_zero_hit(false);
+                self.status.reset_vertical_blank();
                 return true;
             }
         }
@@ -158,7 +158,7 @@ impl PPU for NesPPU {
                 self.internal_data_buffer = self.vram[self.mirror_vram_addr(addr) as usize];
                 result
             }
-            0x3000..=0x3eFF => panic!("0x3000 to 0x3FFF is not usable. addr: 0x{:04X}", addr),
+            0x3000..=0x3EFF => panic!("0x3000 to 0x3FFF is not usable. addr: 0x{:04X}", addr),
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
                 self.palette_table[(add_mirror & 0x3f00) as usize]
@@ -175,7 +175,7 @@ impl PPU for NesPPU {
             0x2000..=0x2FFF => {
                 self.vram[self.mirror_vram_addr(addr) as usize] = data;
             }
-            0x3000..=0x3eFF => panic!("0x3000 to 0x3FFF is not usable. addr: 0x{:04X}", addr),
+            0x3000..=0x3EFF => panic!("0x3000 to 0x3FFF is not usable. addr: 0x{:04X}", addr),
             0x3f10 | 0x3f14 | 0x3f18 | 0x3f1c => {
                 let add_mirror = addr - 0x10;
                 self.palette_table[(add_mirror - 0x3f00) as usize] = data;
